@@ -1,0 +1,13 @@
+.banner>.cover{
+    width: 100%;
+    
+}
+
+ .profile{
+    border-radius: 100%; 
+    width: 200px;
+    position: relative;
+    top: -120px;
+    margin-left: 20px;
+    border: 1px white solid;
+}
