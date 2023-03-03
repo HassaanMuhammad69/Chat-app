@@ -157,6 +157,34 @@ app.post('/api/v1/change-password', async (req, res) => {
 
 
 
+//userlist API
+app.get('api/v1/users',async (req, res) => {
+
+    try {
+    const q = req.query.q;
+ 
+    let query
+
+    if (q) {
+        query = userModel.find({ $text: {$search: q}  })
+    }
+    else {
+        query = userModel.find({}).limit(10)
+    }
+
+    const users= await query.exec()
+
+    res.send(users)}
+    
+    catch (error) {
+        console.log("error", e)
+        res.send([])
+    }
+
+})
+
+
+
 const __dirname = path.resolve();
 app.use('/', express.static(path.join(__dirname, './web/build')))
 app.use('*', express.static(path.join(__dirname, './web/build')))

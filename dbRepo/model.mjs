@@ -18,6 +18,7 @@ const userSchema = new mongoose.Schema({
     password: { type: String, required: true },
     createdOn: { type: Date, default: Date.now },
 });
+userSchema.index({firstName:'text' , lastName:'text'})
 export const userModel = mongoose.model('users', userSchema);
 
 
