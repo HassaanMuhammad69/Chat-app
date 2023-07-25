@@ -3,6 +3,8 @@ import axios from "axios";
 import { useEffect, useState, useContext } from 'react';
 import { GlobalContext } from '../context/Context';
 import "./userList.css"
+import { Link } from "react-router-dom";
+
 
 
 function Home() {
@@ -48,12 +50,19 @@ function Home() {
 
       {(users?.length) ?
         users?.map((eachUser, i) => {
-          return(
-          <div className='userListItem' key={i}>
-            <h2>{eachUser.firstName} {eachUser.lastName}</h2>
-            <span>{eachUser.email}</span>
-            {(eachUser?.me)? <span> <br/> this is me</span> : null}
-          </div>)
+          return (
+
+            <div className='userListItem' key={i}>
+              <Link to={`/chat/${eachUser._id}`}>
+
+                <h2>{eachUser.firstName} {eachUser.lastName}</h2>
+                <span>{eachUser.email}</span>
+                {/* {(eachUser?.me) ? <span> <br /> this is me</span> : null} */}
+
+              </Link>
+            </div>
+
+          )
         })
         : null
       }

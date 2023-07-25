@@ -157,7 +157,7 @@ app.post('/api/v1/change-password', async (req, res) => {
 //userlist API
 app.get('/api/v1/users', async (req, res) => {
 
-    const myId= req.body.Token._id
+    // const myId= req.body.Token._id
 
     try {
         const q = req.query.q
@@ -173,28 +173,30 @@ app.get('/api/v1/users', async (req, res) => {
 
         const users = await query.exec()
 
-       const modifiedUserList= users.map(eachUser => {
+    //    const modifiedUserList= users.map(eachUser => {
 
-        let user ={
-            _id: eachUser._id,
-            firstName: eachUser.firstName,
-            lastName: eachUser.lastName,
-            email: eachUser.email
+    //     let user ={
+    //         _id: eachUser._id,
+    //         firstName: eachUser.firstName,
+    //         lastName: eachUser.lastName,
+    //         email: eachUser.email
 
-        }
-             if(eachUser._id.toString() === myId){
-                console.log("matched");
-                user.me= true
-                return user;
-             }
-             else{
-                console.log(" Not matched");
-                return user;
-             }
+    //     }
+    //          if(eachUser._id.toString() === myId){
+    //             console.log("matched");
+    //             user.me= true
+    //             return user;
+    //          }
+    //          else{
+    //             console.log(" Not matched");
+    //             return user;
+    //          }
 
-        })
+    //     })
 
-        res.send(modifiedUserList)
+    //     res.send(modifiedUserList)
+
+        res.send(users)
 
     }
     catch (error) {

@@ -15,6 +15,8 @@ import Signup from "./components/signup";
 import ChangePassword from "./components/changePassword copy"
 import ForgetPassword from "./components/forgetPassword";
 import Userlist from "./components/userList";
+import ChatScreen from "./components/message";
+
 
 
 
@@ -126,6 +128,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Userlist/>} />
           <Route path="about" element={<About />} />
+          <Route path="/chat/:id" element={<ChatScreen />} />
           <Route path="/change-password" element={<ChangePassword />} />
           <Route path="*" element={<Navigate to="/" replace={true} />} />
         </Routes>
