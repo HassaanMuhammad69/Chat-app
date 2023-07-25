@@ -13,9 +13,6 @@ import { stringToHash, varifyHash, } from "bcrypt-inzi"
 
 
 
-
-
-
 const SECRET = process.env.SECRET || "topsecret";
 
 
@@ -158,26 +155,50 @@ app.post('/api/v1/change-password', async (req, res) => {
 
 
 //userlist API
-app.get('api/v1/users',async (req, res) => {
+app.get('/api/v1/users', async (req, res) => {
+
+    const myId= req.body.Token._id
 
     try {
-    const q = req.query.q;
- 
-    let query
+        const q = req.query.q
 
-    if (q) {
-        query = userModel.find({ $text: {$search: q}  })
+        let query;
+
+        if (q) {
+            query = userModel.find({ $text: { $search: q }})
+        }
+        else {
+            query = userModel.find({}).limit(40)
+        }
+
+        const users = await query.exec()
+
+       const modifiedUserList= users.map(eachUser => {
+
+        let user ={
+            _id: eachUser._id,
+            firstName: eachUser.firstName,
+            lastName: eachUser.lastName,
+            email: eachUser.email
+
+        }
+             if(eachUser._id.toString() === myId){
+                console.log("matched");
+                user.me= true
+                return user;
+             }
+             else{
+                console.log(" Not matched");
+                return user;
+             }
+
+        })
+
+        res.send(modifiedUserList)
+
     }
-    else {
-        query = userModel.find({}).limit(10)
-    }
-
-    const users= await query.exec()
-
-    res.send(users)}
-    
     catch (error) {
-        console.log("error", e)
+        console.log("error", error)
         res.send([])
     }
 

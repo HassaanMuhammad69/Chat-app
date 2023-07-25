@@ -2,7 +2,7 @@
 import axios from "axios";
 import { useEffect, useState, useContext } from 'react';
 import { GlobalContext } from '../context/Context';
-
+import "./userList.css"
 
 
 function Home() {
@@ -13,58 +13,59 @@ function Home() {
   const [users, setUsers] = useState(null)
 
 
+
   useEffect(() => {
 
-    getUsers();
+    getUsers()
 
   }, [])
 
-
-
   const getUsers = async (e) => {
-    if(e) e.preventDefault();
+    if (e) e.preventDefault();
 
     try {
       const response = await axios.get(`${state.baseUrl}/users?q=${searchTerm}`)
-      console.log("response: ", response.data);
+      console.log("response", response.data)
       setUsers(response.data)
 
     } catch (error) {
-      console.log("error in getting all user", error);
+      console.log("error in getting all messages", error)
     }
+
   }
 
 
 
   return (
     <div>
-      <h1>Search user to start the chat</h1>
-
+      <h1>Search user to start chat</h1>
       <form onSubmit={getUsers}>
-        <input type="search" onChange={(e) => [
+        <input type="search" onChange={(e) => {
           setSearchTerm(e.target.value)
-        ]} />
-        <button>Search</button>
+        }} />
+        <button type="submit" >Search</button>
       </form>
 
       {(users?.length) ?
-        users?.map((eachUser, index) => {
-         return <div key={index}>
-            <h2>{eachUser?.firstName} {eachUser?.lastName}</h2>
-            <span>{eachUser?.email}</span>
-          </div>
+        users?.map((eachUser, i) => {
+          return(
+          <div className='userListItem' key={i}>
+            <h2>{eachUser.firstName} {eachUser.lastName}</h2>
+            <span>{eachUser.email}</span>
+            {(eachUser?.me)? <span> <br/> this is me</span> : null}
+          </div>)
         })
         : null
       }
       {(users?.length === 0 ? "No user found" : null)}
-      {(users === null ? "Loading.." : null)}
+      {(users === null ? "Loading..." : null)}
 
 
 
 
-    </div >
+    </div>
+  )
 
-  );
 }
 
 export default Home;
