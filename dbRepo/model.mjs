@@ -11,6 +11,17 @@ let tweetSchema = new mongoose.Schema({
 export const tweetModel = mongoose.model('products', tweetSchema);
 
 
+const messageSchema = new mongoose.Schema({
+    from: { type: mongoose.ObjectId, ref: "users" , required: true },
+    to:{ type: mongoose.ObjectId, ref: "users" , required: true },
+    text: { type: String, required: true }, 
+    imageUrl:{type:String}, 
+    createdOn: { type: Date, default: Date.now },
+});
+messageSchema.index({text:'text'})
+export const messageModel = mongoose.model('Messages', messageSchema);
+
+
 const userSchema = new mongoose.Schema({
     firstName: { type: String },
     lastName: { type: String },

@@ -8,7 +8,7 @@ import cookieParser from 'cookie-parser';
 
 import authApis from './apis/auth.mjs'
 import productApis from './apis/product.mjs'
-import { userModel } from './dbRepo/model.mjs'
+import { userModel ,messageModel } from './dbRepo/model.mjs'
 import { stringToHash, varifyHash, } from "bcrypt-inzi"
 
 
@@ -152,7 +152,7 @@ app.post('/api/v1/change-password', async (req, res) => {
 
 })
 
-
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //userlist API
 app.get('/api/v1/users', async (req, res) => {
@@ -167,7 +167,7 @@ app.get('/api/v1/users', async (req, res) => {
         if (q) {
             query = userModel.find({ $text: { $search: q }})
         }
-        else {
+         else {
             query = userModel.find({}).limit(40)
         }
 
@@ -206,8 +206,53 @@ app.get('/api/v1/users', async (req, res) => {
 
 })
 
+//Message API
+ //mesage sent API: 
+app.post('/api/v1/message', async (req, res) => {
+
+    if(!req.body.text ||
+        !req.body.to)
+        {
+            res.status("400").send("invalid input")
+            return;
+        }
+     
+       const sent= await messageModel.create({
+            from: req.body.token._id,
+            to: req.body.to,
+            text: req.body.text
+        })
+        console.log("sent", sent)
+        res.send("Message sent successfully")
 
 
+})
+
+//message retrive API:
+app.get('/api/v1/messages/:id', async (req, res) => {
+
+   const messages= await messageModel.find({
+        from:req.body.token._id,
+        to: req.params.id
+    })
+    .populate({path:'from', select: 'firstName lastName email'})
+    .populate({path:'to', select: 'firstName lastName email'})
+    .limit(100)
+    .exec()
+
+    res.send(messages)
+
+})
+
+
+
+
+
+
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 const __dirname = path.resolve();
 app.use('/', express.static(path.join(__dirname, './web/build')))
 app.use('*', express.static(path.join(__dirname, './web/build')))

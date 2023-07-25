@@ -4,6 +4,7 @@ import { useEffect, useState, useContext } from 'react';
 import { GlobalContext } from '../context/Context';
 import "./userList.css"
 import {  useParams } from "react-router-dom";
+import moment from "moment";
 
 
 
@@ -14,14 +15,26 @@ function ChatScreen() {
   const {id}= useParams();
 
   const [writeMessage, setWriteMessage] = useState("")
-  const [users, setUsers] = useState(null)
+  const [conversation, setConversation] = useState(null)
 
 
 
   useEffect(() => {
 
-   
-
+    const getMessages = async () => {
+      
+      try {
+        const response = await axios.get(`${state.baseUrl}/messages/${id}`)
+        console.log("response", response.data)
+        setConversation(response.data)
+  
+      } catch (error) {
+        console.log("error in getting all messages", error)
+      }
+  
+    }
+    getMessages();
+  
   }, [])
 
   const sendMessage = async (e) => {
@@ -33,7 +46,6 @@ function ChatScreen() {
         text: writeMessage
       })
       console.log("response", response.data)
-      setUsers(response.data)
 
     } catch (error) {
       console.log("error in getting all messages", error)
@@ -53,19 +65,20 @@ function ChatScreen() {
         <button type="submit" >Send</button>
       </form>
 
-      {(users?.length) ?
-        users?.map((eachUser, i) => {
+      {(conversation?.length) ?
+        conversation?.map((eachMessage, i) => {
           return(
-          <div className='userListItem' key={i}>
-            <h2>{eachUser.firstName} {eachUser.lastName}</h2>
-            <span>{eachUser.email}</span>
-            {(eachUser?.me)? <span> <br/> this is me</span> : null}
-          </div>)
+          <div key={i} >
+            <h2>{eachMessage?.from?.firstName} </h2>
+            <span>{moment( eachMessage?.createdOn).fromNow()}</span>
+            <p>{eachMessage?.text}</p>
+          </div>
+            )
         })
         : null
       }
-      {(users?.length === 0 ? "No user found" : null)}
-      {(users === null ? "Loading..." : null)}
+      {(conversation?.length === 0 ? "No Messages found" : null)}
+      {(conversation === null ? "Loading..." : null)}
 
 
 
