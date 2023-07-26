@@ -8,7 +8,7 @@ import cookieParser from 'cookie-parser';
 
 import authApis from './apis/auth.mjs'
 import productApis from './apis/product.mjs'
-import { userModel ,messageModel } from './dbRepo/model.mjs'
+import { userModel, messageModel } from './dbRepo/model.mjs'
 import { stringToHash, varifyHash, } from "bcrypt-inzi"
 
 
@@ -165,36 +165,36 @@ app.get('/api/v1/users', async (req, res) => {
         let query;
 
         if (q) {
-            query = userModel.find({ $text: { $search: q }})
+            query = userModel.find({ $text: { $search: q } })
         }
-         else {
+        else {
             query = userModel.find({}).limit(40)
         }
 
         const users = await query.exec()
 
-    //    const modifiedUserList= users.map(eachUser => {
+        //    const modifiedUserList= users.map(eachUser => {
 
-    //     let user ={
-    //         _id: eachUser._id,
-    //         firstName: eachUser.firstName,
-    //         lastName: eachUser.lastName,
-    //         email: eachUser.email
+        //     let user ={
+        //         _id: eachUser._id,
+        //         firstName: eachUser.firstName,
+        //         lastName: eachUser.lastName,
+        //         email: eachUser.email
 
-    //     }
-    //          if(eachUser._id.toString() === myId){
-    //             console.log("matched");
-    //             user.me= true
-    //             return user;
-    //          }
-    //          else{
-    //             console.log(" Not matched");
-    //             return user;
-    //          }
+        //     }
+        //          if(eachUser._id.toString() === myId){
+        //             console.log("matched");
+        //             user.me= true
+        //             return user;
+        //          }
+        //          else{
+        //             console.log(" Not matched");
+        //             return user;
+        //          }
 
-    //     })
+        //     })
 
-    //     res.send(modifiedUserList)
+        //     res.send(modifiedUserList)
 
         res.send(users)
 
@@ -207,23 +207,22 @@ app.get('/api/v1/users', async (req, res) => {
 })
 
 //Message API
- //mesage sent API: 
+//mesage sent API: 
 app.post('/api/v1/message', async (req, res) => {
 
-    if(!req.body.text ||
-        !req.body.to)
-        {
-            res.status("400").send("invalid input")
-            return;
-        }
-     
-       const sent= await messageModel.create({
-            from: req.body.token._id,
-            to: req.body.to,
-            text: req.body.text
-        })
-        console.log("sent", sent)
-        res.send("Message sent successfully")
+    if (!req.body.text ||
+        !req.body.to) {
+        res.status("400").send("invalid input")
+        return;
+    }
+
+    const sent = await messageModel.create({
+        from: req.body.token._id,
+        to: req.body.to,
+        text: req.body.text
+    })
+    console.log("sent", sent)
+    res.send("Message sent successfully")
 
 
 })
@@ -231,14 +230,24 @@ app.post('/api/v1/message', async (req, res) => {
 //message retrive API:
 app.get('/api/v1/messages/:id', async (req, res) => {
 
-   const messages= await messageModel.find({
-        from:req.body.token._id,
-        to: req.params.id
-    })
-    .populate({path:'from', select: 'firstName lastName email'})
-    .populate({path:'to', select: 'firstName lastName email'})
-    .limit(100)
-    .exec()
+    const messages = await messageModel.find(
+        {
+            $or: [
+                {
+                    from: req.body.token._id,
+                    to: req.params.id
+                }, {
+                    from: req.params.id,
+                    to: req.body.token._id
+                }
+            ]
+        }
+    )
+        .populate({ path: 'from', select: 'firstName lastName email' })
+        .populate({ path: 'to', select: 'firstName lastName email' })
+        .limit(100) 
+        .sort({_id: -1})
+        .exec()
 
     res.send(messages)
 

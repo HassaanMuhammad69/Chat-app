@@ -5,6 +5,7 @@ import { GlobalContext } from '../context/Context';
 import "./userList.css"
 import {  useParams } from "react-router-dom";
 import moment from "moment";
+import './message.css'
 
 
 
@@ -16,26 +17,43 @@ function ChatScreen() {
 
   const [writeMessage, setWriteMessage] = useState("")
   const [conversation, setConversation] = useState(null)
+  const [recipientProfile, setRecipientProfile] = useState({})
 
+  const getRecipientProfile = async () => {
 
+    try {
+      let response = await axios.get(`${state.baseUrl}/profile/${id}`, {
+        withCredentials: true
+      })
+     
+      console.log("RecipientProfile", response)
+      setRecipientProfile(response.data)
+
+    } catch (error) {
+      console.log("error", error)
+    }
+  }
+  const getMessages = async () => {
+      
+    try {
+      const response = await axios.get(`${state.baseUrl}/messages/${id}`)
+      console.log("response", response.data)
+      setConversation(response.data)
+
+    } catch (error) {
+      console.log("error in getting all messages", error)
+    }
+
+  }
 
   useEffect(() => {
 
-    const getMessages = async () => {
-      
-      try {
-        const response = await axios.get(`${state.baseUrl}/messages/${id}`)
-        console.log("response", response.data)
-        setConversation(response.data)
-  
-      } catch (error) {
-        console.log("error in getting all messages", error)
-      }
-  
-    }
+    getRecipientProfile()
     getMessages();
-  
+
   }, [])
+
+
 
   const sendMessage = async (e) => {
     if (e) e.preventDefault();
@@ -57,7 +75,7 @@ function ChatScreen() {
 
   return (
     <div>
-      <h1>Chat Screen</h1>
+      <h1>Chat with {recipientProfile?.firstName} {recipientProfile?.lastName}</h1>
       <form onSubmit={sendMessage}>
         <input type="text" placeholder="type your message" onChange={(e) => {
           setWriteMessage(e.target.value)
@@ -67,14 +85,18 @@ function ChatScreen() {
 
       {(conversation?.length) ?
         conversation?.map((eachMessage, i) => {
+          const className = (eachMessage?.from?._id === id) ? "recipientMessage" : "myMessage"
           return(
-          <div key={i} >
-            <h2>{eachMessage?.from?.firstName} </h2>
-            <span>{moment( eachMessage?.createdOn).fromNow()}</span>
-            <p>{eachMessage?.text}</p>
+          <div key={i} 
+          className={`message ${className}`}>
+            <div className="head">
+            <div className='name'>{eachMessage?.from?.firstName} </div>
+            <div className='time'>{moment( eachMessage?.createdOn).fromNow()}</div>
+            </div>
+            <div className='text'>{eachMessage?.text}</div>
           </div>
             )
-        })
+        }) 
         : null
       }
       {(conversation?.length === 0 ? "No Messages found" : null)}
