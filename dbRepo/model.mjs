@@ -43,7 +43,9 @@ export const otpModel = mongoose.model('Otps', otpSchema);
 
 
 
-const mongodbURI = process.env.mongodbURI || "mongodb+srv://saad:sdsdsd@cluster0.9bemtsg.mongodb.net/ecommerce?retryWrites=true&w=majority";
+const mongodbURI = process.env.mongodbURI || "mongodb+srv://chat:chat1@cluster0.oud3rz1.mongodb.net/chatapp?retryWrites=true&w=majority"
+
+// "mongodb+srv://saad:sdsdsd@cluster0.9bemtsg.mongodb.net/ecommerce?retryWrites=true&w=majority";
 
 // // saad 
 // // "mongodb+srv://saad:sdsdsd@cluster0.9bemtsg.mongodb.net/ecommerce?retryWrites=true&w=majority";
